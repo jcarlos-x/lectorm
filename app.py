@@ -10,7 +10,7 @@ from functools import wraps
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['UPLOAD_FOLDER'] = '/home/dev-pc/Documentos/Projects/lectorms/mangas'
+app.config['UPLOAD_FOLDER'] = './mangas'
 app.config['DATABASE'] = 'manga_reader.db'
 
 # Verificar que el directorio de mangas existe
