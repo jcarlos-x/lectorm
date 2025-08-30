@@ -44,15 +44,14 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # Usar 'latest' para branch main/master
-            type=ref,event=branch
-            type=ref,event=pr
-            # Para tags de versión (v1.0.0)
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            # Tag latest solo para main/master
+            # Siempre latest para main/master
             type=raw,value=latest,enable={{is_default_branch}}
+            # Solo SHA del commit (7 caracteres)
+            type=sha,format=short
+            # Para tags de versión manual (v1.0.0) si los usas ocasionalmente
+            type=semver,pattern={{version}}
+            # Para pull requests
+            type=ref,event=pr
           labels: |
             org.opencontainers.image.title=Lectorm
             org.opencontainers.image.description=Lector de mangas web desarrollado con Flask
