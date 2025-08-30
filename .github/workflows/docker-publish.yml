@@ -1,0 +1,105 @@
+name: Build and Push Docker Image
+
+# Ejecutar en push a main, pull requests, y releases
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*.*.*' ]
+
+# Variables de entorno globales
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: lectorm
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      # Checkout del código fuente
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Configurar Docker Buildx para builds multi-plataforma
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # Login a DockerHub usando secrets
+      - name: Log in to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      
+      # Extraer metadatos para tags y labels
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            # Usar 'latest' para branch main/master
+            type=ref,event=branch
+            type=ref,event=pr
+            # Para tags de versión (v1.0.0)
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # Tag latest solo para main/master
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=Lectorm
+            org.opencontainers.image.description=Lector de mangas web desarrollado con Flask
+            org.opencontainers.image.vendor=Lectorm Project
+      
+      # Construir y hacer push de la imagen Docker
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Test básico de la imagen (solo para PRs)
+      - name: Test Docker image
+        if: github.event_name == 'pull_request'
+        run: |
+          docker run --rm -d -p 5000:5000 --name lectorm-test ${{ steps.meta.outputs.tags }}
+          sleep 10
+          curl -f http://localhost:5000/login || exit 1
+          docker stop lectorm-test
+      
+      # Mostrar información de la imagen construida
+      - name: Image digest
+        run: echo "Image built successfully"
+
+  # Job opcional para escaneo de seguridad
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name != 'pull_request'
+    
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
