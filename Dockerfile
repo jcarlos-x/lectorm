@@ -14,6 +14,7 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     sqlite3 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Establecer directorio de trabajo
@@ -37,19 +38,14 @@ RUN mkdir -p /app/mangas /app/data && \
 USER appuser
 
 # Crear base de datos y configuración inicial
-RUN python -c "
-from app import init_db, init_default_settings, app
-with app.app_context():
-    init_db()
-    init_default_settings()
-"
+RUN python -c "import app; app.init_db(); app.init_default_settings()" || echo "Database initialization will happen at runtime"
 
 # Exponer puerto
 EXPOSE 5000
 
 # Comando de salud para Docker
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/login')" || exit 1
+    CMD curl -f http://localhost:5000/login || exit 1
 
 # Comando por defecto
 CMD ["python", "app.py"]
