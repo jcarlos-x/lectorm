@@ -9,7 +9,7 @@ on:
 # Variables de entorno globales
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: lectorm
+  IMAGE_NAME: xlokius/lectorm
 
 jobs:
   build-and-push:
@@ -42,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             # Usar 'latest' para branch main/master
             type=ref,event=branch
@@ -57,6 +57,8 @@ jobs:
             org.opencontainers.image.title=Lectorm
             org.opencontainers.image.description=Lector de mangas web desarrollado con Flask
             org.opencontainers.image.vendor=Lectorm Project
+            org.opencontainers.image.source=https://github.com/jcarlos-x/lectorm
+            org.opencontainers.image.url=https://hub.docker.com/r/xlokius/lectorm
       
       # Construir y hacer push de la imagen Docker
       - name: Build and push Docker image
@@ -94,7 +96,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: 'sarif'
           output: 'trivy-results.sarif'
       
