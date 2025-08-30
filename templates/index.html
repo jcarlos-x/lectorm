@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaReader - Flask</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .refresh-library-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+        }
+        
+        .refresh-library-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .refresh-library-btn:active {
+            transform: translateY(0);
+        }
+        
+        .refresh-library-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .refresh-library-btn.loading .material-icons {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #4CAF50;
+        }
+        
+        .notification.error {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="collapse-button" id="collapse-menu">
+                <span class="material-icons">chevron_left</span>
+            </div>
+            
+            <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <span class="material-icons">menu</span>
+            </div>
+            
+            <div class="logo">
+                <span class="material-icons">menu_book</span>
+                <h1>MangaReader</h1>
+            </div>
+            
+            <nav>
+                <ul class="categories">
+                    <li id="home-link" style="cursor: pointer;">
+                        <span class="material-icons">home</span>
+                        <span class="text">Inicio</span>
+                    </li>
+                    <li id="settings-link" style="cursor: pointer;">
+                        <span class="material-icons">settings</span>
+                        <span class="text">Configuración</span>
+                    </li>
+                    <li id="logout-link" style="cursor: pointer;">
+                        <span class="material-icons">logout</span>
+                        <span class="text">Cerrar sesión</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" placeholder="Buscar mangas...">
+                </div>
+                
+                <div class="header-actions">
+                    <button class="refresh-library-btn" id="refresh-library-btn" title="Actualizar biblioteca">
+                        <span class="material-icons">refresh</span>
+                        <span class="btn-text">Actualizar</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="content">
+                <!-- All Mangas Section -->
+                <section class="all-books">
+                    <div class="section-header">
+                        <h2>Todos los mangas</h2>
+                        <div class="manga-count">
+                            <span id="manga-count">0</span> mangas disponibles
+                        </div>
+                    </div>
+                    <div class="books-grid" id="books-grid">
+                        <!-- Los mangas se cargarán aquí -->
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <div class="pagination" id="pagination">
+                        <!-- Los controles de paginación se generarán aquí -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

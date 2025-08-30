@@ -1,0 +1,21 @@
+# Base de datos
+manga_reader.db
+
+# Variables de entorno
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+
+# Logs
+*.log
+
+# Archivos temporales
+.DS_Store
+Thumbs.db

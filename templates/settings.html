@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - MangaReader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Override para asegurar layout correcto */
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            grid-column: 1;
+        }
+        
+        .main-content {
+            grid-column: 2;
+            overflow-y: auto;
+        }
+        
+        .settings-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .settings-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .settings-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .settings-title .material-icons {
+            font-size: 2rem;
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px;
+            border-radius: 12px;
+        }
+        
+        .settings-description {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .form-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .form-help {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-help .material-icons {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #4338ca);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+        
+        .btn-validate {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            min-width: 140px;
+        }
+        
+        .btn-validate:hover {
+            background: linear-gradient(135deg, #10b981, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .validation-result {
+            margin-top: 16px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            border: 2px solid;
+            backdrop-filter: blur(5px);
+        }
+        
+        .validation-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .validation-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--error);
+            color: var(--error);
+        }
+        
+        .directory-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .info-badge {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        
+        .info-badge .material-icons {
+            font-size: 16px;
+        }
+        
+        .system-info-grid {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .system-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--input-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .system-info-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        .system-info-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .system-info-value {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .status-badge {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .loading .material-icons {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                grid-column: 1;
+                grid-row: 1;
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                grid-column: 1;
+                grid-row: 2;
+            }
+            
+            .settings-container {
+                padding: 16px;
+            }
+            
+            .settings-card {
+                padding: 24px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .btn-validate {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .system-info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .system-info-value {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <span class="material-icons">menu_book</span>
+                <h1>MangaReader</h1>
+            </div>
+            
+            <nav>
+                <ul class="categories">
+                    <li id="home-link" style="cursor: pointer;">
+                        <span class="material-icons">home</span>
+                        <span class="text">Inicio</span>
+                    </li>
+                    <li class="active" style="cursor: pointer;">
+                        <span class="material-icons">settings</span>
+                        <span class="text">Configuración</span>
+                    </li>
+                    <li id="logout-link" style="cursor: pointer;">
+                        <span class="material-icons">logout</span>
+                        <span class="text">Cerrar sesión</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                        <span class="material-icons">menu</span>
+                    </button>
+                    <h2>Configuración del Sistema</h2>
+                </div>
+            </header>
+            
+            <div class="settings-container">
+                <!-- Configuración de Directorio de Mangas -->
+                <div class="settings-card">
+                    <h3 class="settings-title">
+                        <span class="material-icons">folder</span>
+                        Directorio de Mangas
+                    </h3>
+                    <p class="settings-description">
+                        Configura la ubicación donde se almacenan tus mangas. El sistema buscará automáticamente 
+                        carpetas de manga en este directorio.
+                    </p>
+                    
+                    <form id="manga-directory-form">
+                        <div class="form-group">
+                            <label class="form-label" for="manga-directory">
+                                <span class="material-icons">folder_open</span>
+                                Ruta del Directorio
+                            </label>
+                            <div class="input-group">
+                                <div class="input-row">
+                                    <input 
+                                        type="text" 
+                                        id="manga-directory" 
+                                        name="manga-directory"
+                                        class="form-input"
+                                        placeholder="/ruta/a/tus/mangas"
+                                        required
+                                    >
+                                    <button type="button" class="btn btn-validate" id="validate-directory-btn">
+                                        <span class="material-icons">check_circle</span>
+                                        Validar
+                                    </button>
+                                </div>
+                                <div class="form-help">
+                                    <span class="material-icons">info</span>
+                                    Puedes usar ~ para referirte a tu directorio home (ej: ~/Documentos/Mangas)
+                                </div>
+                                <div id="validation-result"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary" id="save-settings-btn">
+                                <span class="material-icons">save</span>
+                                Guardar Configuración
+                            </button>
+                            <a href="/" class="btn btn-secondary">
+                                <span class="material-icons">arrow_back</span>
+                                Volver al Inicio
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Información del Sistema -->
+                <div class="settings-card">
+                    <h3 class="settings-title">
+                        <span class="material-icons">info</span>
+                        Información del Sistema
+                    </h3>
+                    <p class="settings-description">
+                        Estado actual de la configuración del sistema.
+                    </p>
+                    
+                    <div id="system-info">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // JavaScript específico para la página de configuración
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCurrentSettings();
+            setupSettingsHandlers();
+        });
+        
+        async function loadCurrentSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const settings = data.settings;
+                    const mangaDirectorySetting = settings.find(s => s.key === 'manga_directory');
+                    
+                    if (mangaDirectorySetting) {
+                        document.getElementById('manga-directory').value = mangaDirectorySetting.value;
+                    }
+                    
+                    updateSystemInfo(settings);
+                }
+            } catch (error) {
+                console.error('Error al cargar configuraciones:', error);
+            }
+        }
+        
+        function setupSettingsHandlers() {
+            // Validar directorio
+            document.getElementById('validate-directory-btn').addEventListener('click', validateDirectory);
+            
+            // Guardar configuración
+            document.getElementById('manga-directory-form').addEventListener('submit', saveSettings);
+            
+            // Navegación
+            document.getElementById('home-link').addEventListener('click', () => {
+                window.location.href = '/';
+            });
+        }
+        
+        async function validateDirectory() {
+            const directoryInput = document.getElementById('manga-directory');
+            const validateBtn = document.getElementById('validate-directory-btn');
+            const resultDiv = document.getElementById('validation-result');
+            
+            const directory = directoryInput.value.trim();
+            
+            if (!directory) {
+                showValidationResult('Por favor, ingresa un directorio', false);
+                return;
+            }
+            
+            // Mostrar estado de carga
+            validateBtn.classList.add('loading');
+            validateBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/settings/validate-directory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ directory })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showValidationResult(data.message, true, {
+                        mangaFolders: data.manga_folders,
+                        imageCount: data.image_count,
+                        fullPath: data.directory
+                    });
+                } else {
+                    showValidationResult(data.error, false);
+                }
+                
+            } catch (error) {
+                showValidationResult('Error de conexión al validar directorio', false);
+            } finally {
+                validateBtn.classList.remove('loading');
+                validateBtn.disabled = false;
+            }
+        }
+        
+        function showValidationResult(message, isSuccess, info = null) {
+            const resultDiv = document.getElementById('validation-result');
+            
+            resultDiv.className = `validation-result ${isSuccess ? 'validation-success' : 'validation-error'}`;
+            
+            let content = `<div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons">${isSuccess ? 'check_circle' : 'error'}</span>
+                ${message}
+            </div>`;
+            
+            if (isSuccess && info) {
+                content += `
+                    <div class="directory-info">
+                        <span class="info-badge">
+                            <span class="material-icons">folder</span>
+                            ${info.mangaFolders} carpetas
+                        </span>
+                        <span class="info-badge">
+                            <span class="material-icons">image</span>
+                            ${info.imageCount} imágenes
+                        </span>
+                    </div>
+                    <div style="font-size: 13px; margin-top: 12px; color: var(--text-secondary); font-family: monospace; background: rgba(0,0,0,0.1); padding: 8px 12px; border-radius: 8px;">
+                        ${info.fullPath}
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = content;
+            resultDiv.style.display = 'block';
+        }
+        
+        async function saveSettings(event) {
+            event.preventDefault();
+            
+            const saveBtn = document.getElementById('save-settings-btn');
+            const directoryInput = document.getElementById('manga-directory');
+            
+            const directory = directoryInput.value.trim();
+            
+            if (!directory) {
+                showNotification('Por favor, ingresa un directorio válido', 'error');
+                return;
+            }
+            
+            // Mostrar estado de carga
+            saveBtn.classList.add('loading');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="material-icons">sync</span>Guardando...';
+            
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        manga_directory: directory
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    
+                    // Actualizar automáticamente la biblioteca después de guardar
+                    saveBtn.innerHTML = '<span class="material-icons">refresh</span>Actualizando biblioteca...';
+                    
+                    const refreshResponse = await fetch('/api/refresh-library', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    const refreshData = await refreshResponse.json();
+                    
+                    if (refreshData.success) {
+                        showNotification(`Configuración guardada y biblioteca actualizada. ${refreshData.message}`, 'success');
+                    } else {
+                        showNotification(`Configuración guardada, pero error al actualizar biblioteca: ${refreshData.error}`, 'warning');
+                    }
+                    
+                    // Recargar información del sistema
+                    setTimeout(loadCurrentSettings, 1000);
+                } else {
+                    showNotification(data.error, 'error');
+                }
+                
+            } catch (error) {
+                showNotification('Error de conexión al guardar configuración', 'error');
+            } finally {
+                saveBtn.classList.remove('loading');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<span class="material-icons">save</span>Guardar Configuración';
+            }
+        }
+        
+        function updateSystemInfo(settings) {
+            const systemInfoDiv = document.getElementById('system-info');
+            
+            const mangaDirectory = settings.find(s => s.key === 'manga_directory')?.value || 'No configurado';
+            
+            systemInfoDiv.innerHTML = `
+                <div class="system-info-grid">
+                    <div class="system-info-item">
+                        <div class="system-info-label">
+                            <span class="material-icons">folder</span>
+                            Directorio de Mangas
+                        </div>
+                        <div class="system-info-value" title="${mangaDirectory}">
+                            ${mangaDirectory}
+                        </div>
+                    </div>
+                    <div class="system-info-item">
+                        <div class="system-info-label">
+                            <span class="material-icons">check_circle</span>
+                            Estado de Configuración
+                        </div>
+                        <div class="status-badge">
+                            <span class="material-icons">verified</span>
+                            Configurado
+                        </div>
+                    </div>
+                    <div class="system-info-item">
+                        <div class="system-info-label">
+                            <span class="material-icons">schedule</span>
+                            Última Actualización
+                        </div>
+                        <div class="system-info-value">
+                            ${new Date().toLocaleString('es-ES')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
